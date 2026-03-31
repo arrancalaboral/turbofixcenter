@@ -56,6 +56,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -64,6 +65,8 @@ body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 a {
@@ -996,7 +999,7 @@ section {
     border: 0;
 }
 
-/* ── WHATSAPP FLOAT ── */
+/* ── WHATSAPP FLOAT (CORREGIDO) ── */
 .whatsapp-float {
     position: fixed;
     bottom: 22px;
@@ -1014,6 +1017,7 @@ section {
     z-index: 2000;
     transition: var(--transition);
     animation: pulseGlow 2.2s infinite;
+    text-decoration: none;
 }
 
 .whatsapp-float:hover {
@@ -1026,6 +1030,8 @@ section {
         width: 62px;
         height: 62px;
         font-size: 1.9rem;
+        bottom: 28px;
+        right: 28px;
     }
 }
 
