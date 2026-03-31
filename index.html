@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
- :root {
+:root {
     --primary: #0A2E4D;
     --primary-dark: #051D31;
     --secondary: #00C8E8;
@@ -236,7 +236,7 @@ h3 {
     box-shadow: var(--shadow-card);
 }
 
-/* ── HEADER ── */
+/* ── HEADER CORREGIDO (LOGO PEGADO A LA IZQUIERDA) ── */
 header {
     background: rgba(5, 18, 30, 0.97);
     backdrop-filter: blur(16px);
@@ -245,6 +245,7 @@ header {
     z-index: 1000;
     border-bottom: 1px solid rgba(0, 200, 232, 0.18);
     transition: var(--transition);
+    width: 100%;
 }
 
 header.scrolled {
@@ -257,9 +258,8 @@ header.scrolled {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    gap: 16px;
+    width: 100%;
+    margin: 0;
 }
 
 .logo-link {
@@ -418,7 +418,7 @@ header.scrolled {
     pointer-events: auto;
 }
 
-/* ── DESKTOP NAV (CORREGIDO) ── */
+/* ── DESKTOP NAV (LOGO PEGADO A LA IZQUIERDA) ── */
 @media (min-width: 900px) {
     .menu-toggle,
     .btn-header-call,
@@ -428,6 +428,8 @@ header.scrolled {
 
     .header-container {
         padding: 10px 30px;
+        padding-left: 20px;
+        max-width: 100%;
     }
 
     .logo-img {
@@ -447,6 +449,7 @@ header.scrolled {
         border: none;
         gap: 4px;
         align-items: center;
+        margin-left: auto;
     }
 
     .nav-links li {
@@ -679,7 +682,6 @@ section {
     margin-top: auto;
 }
 
-/* Asegurar que los botones en service cards sean clickeables */
 .service-card .btn,
 .service-card .btn-service {
     position: relative;
