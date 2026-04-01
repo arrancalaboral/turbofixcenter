@@ -248,17 +248,36 @@ header.scrolled {
 .brand-highlight { color: var(--secondary-bright); text-shadow: 0 0 20px rgba(0,229,255,0.5); }
 .hero p { font-size: clamp(0.95rem, 2.5vw, 1.15rem); margin-bottom: 32px; opacity: 0.9; max-width: 640px; margin-left: auto; margin-right: auto; }
 .hero p strong { color: var(--secondary-bright); font-weight: 700; }
-.cta-buttons { display: flex; flex-direction: column; gap: 12px; align-items: center; }
-.cta-buttons .btn { width: 100%; max-width: 320px; }
+.cta-buttons { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px; /* Un poco más de espacio se ve más premium */
+    align-items: center; 
+}
+
+.cta-buttons .btn { 
+    width: 100%; 
+    max-width: 280px; /* Ancho fijo para que ambos sean iguales */
+}
 
 @media (min-width: 600px) {
-    .cta-buttons { flex-direction: row; justify-content: center; flex-wrap: wrap; }
-    .cta-buttons .btn { width: auto; min-width: 180px; max-width: none; }
+    .cta-buttons { 
+        flex-direction: row; 
+        justify-content: center; 
+        flex-wrap: wrap; 
+    }
+    /* Aquí forzamos que ambos midan lo mismo */
+    .cta-buttons .btn { 
+        width: 250px; /* Un ancho fijo que les quede bien a ambos */
+        max-width: none; 
+        min-width: 0; 
+    }
 }
 
 @media (min-width: 900px) {
     .hero-content { text-align: left; }
     .hero p { margin-left: 0; }
+    /* Alineamos al inicio con el texto para que no se vea desfasado */
     .cta-buttons { justify-content: flex-start; }
 }
 
@@ -412,7 +431,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.8); padding: 56px 0 
             </h1>
             <p class="fade-in">
                 ¡Reparaciones en solo <strong>30 a 90 minutos</strong>! Diagnosticamos y reparamos
-                tu PC o Laptop al instante, sin que tengas que dejar tu equipo.
+                tu PC o Laptop al instante, sin que tengas que dejar tu equipo. <br>
                 <strong>Precisión · Velocidad · Transparencia</strong>
             </p>
             <div class="cta-buttons fade-in">
