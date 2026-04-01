@@ -49,12 +49,6 @@
         body.menu-open {
             overflow: hidden;
             /* Bloquea scroll en PC */
-            height: 100vh;
-            /* Limita la altura al tamaño de la pantalla */
-            position: fixed;
-            /* Bloquea el scroll elástico en iOS/Safari */
-            width: 100%;
-            /* Evita que el body se encoja al fijarlo */
         }
 
         *,
@@ -1518,99 +1512,100 @@
         </div>
     </footer>
 
-    <script>
-        // Observer para animaciones fade-in
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-        // ── MENÚ MÓVIL CON BLOQUEO DE SCROLL MEJORADO (SIN SALTO VISUAL) ──
-        const openBtn = document.getElementById('menu-open-btn');
-        const closeBtn = document.getElementById('nav-close-btn');
-        const navLinks = document.getElementById('nav-links');
-        const overlay = document.getElementById('nav-overlay');
-        const body = document.body;
-
-        function openMenu() {
-            navLinks.classList.add('active');
-            overlay.classList.add('active');
-            // Solo agregamos la clase que bloquea el scroll, sin modificar position
-            body.classList.add('menu-open');
-        }
-
-        function closeMenu() {
-            navLinks.classList.remove('active');
-            overlay.classList.remove('active');
-            // Removemos la clase para restaurar el scroll
-            body.classList.remove('menu-open');
-        }
-
-        openBtn.addEventListener('click', openMenu);
-        closeBtn.addEventListener('click', closeMenu);
-        overlay.addEventListener('click', closeMenu);
-        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-
-        // ── HEADER SCROLL Y ESPACIADOR DINÁMICO ──
-        const header = document.getElementById('header');
-
-        // Efecto de scroll en el header
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 50);
-        }, { passive: true });
-
-        // ── ACTIVE NAV LINK (corregido para header fijo) ──
-        const sections = document.querySelectorAll('section[id]');
-        const navItems = document.querySelectorAll('.nav-links a[href^="#"]');
-
-        function updateActive() {
-            let current = '';
-            const scrollY = window.scrollY + (header ? header.offsetHeight + 20 : 120);
-            sections.forEach(s => {
-                if (scrollY >= s.offsetTop && scrollY < s.offsetTop + s.offsetHeight) {
-                    current = s.id;
-                }
-            });
-            navItems.forEach(a => {
-                const href = a.getAttribute('href');
-                if (href === '#' + current) {
-                    a.classList.add('active');
-                } else {
-                    a.classList.remove('active');
-                }
-            });
-        }
-
-        window.addEventListener('scroll', updateActive, { passive: true });
-        window.addEventListener('resize', () => {
-            updateActive();
+ <script>
+    // ── OBSERVER PARA ANIMACIONES FADE-IN ──
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { 
+                e.target.classList.add('visible'); 
+                observer.unobserve(e.target); 
+            }
         });
-        updateActive();
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-        // ── SMOOTH SCROLL (corregido para header fijo) ──
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-            a.addEventListener('click', e => {
-                const targetId = a.getAttribute('href');
-                if (targetId === '#') return;
+    // ── MENÚ MÓVIL CON BLOQUEO POR EVENTOS (CERO SALTOS) ──
+    const openBtn = document.getElementById('menu-open-btn');
+    const closeBtn = document.getElementById('nav-close-btn');
+    const navLinks = document.getElementById('nav-links');
+    const overlay = document.getElementById('nav-overlay');
+    const body = document.body;
 
-                const target = document.querySelector(targetId);
-                if (target) {
-                    e.preventDefault();
-                    const headerHeight = header ? header.offsetHeight : 0;
-                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
-                    const offsetPosition = targetPosition - headerHeight;
+    // Función para prevenir el scroll (la "llave" del bloqueo)
+    function preventDefault(e) { e.preventDefault(); }
 
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
+    function openMenu() {
+        navLinks.classList.add('active');
+        overlay.classList.add('active');
+        body.classList.add('menu-open');
+        
+        // Bloqueo táctil para móviles (esto evita que el dedo mueva el fondo)
+        window.addEventListener('wheel', preventDefault, { passive: false });
+        window.addEventListener('touchmove', preventDefault, { passive: false });
+        window.addEventListener('keydown', (e) => {
+            if(['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(e.code)) preventDefault(e);
+        }, { passive: false });
+    }
+
+    function closeMenu() {
+        navLinks.classList.remove('active');
+        overlay.classList.remove('active');
+        body.classList.remove('menu-open');
+        
+        // Liberamos el scroll
+        window.removeEventListener('wheel', preventDefault);
+        window.removeEventListener('touchmove', preventDefault);
+    }
+
+    openBtn.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+    // ── HEADER SCROLL ──
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    // ── ACTIVE NAV LINK ──
+    const sections = document.querySelectorAll('section[id]');
+    const navItems = document.querySelectorAll('.nav-links a[href^="#"]');
+
+    function updateActive() {
+        let current = '';
+        const scrollY = window.scrollY + (header ? header.offsetHeight + 20 : 120);
+        sections.forEach(s => {
+            if (scrollY >= s.offsetTop && scrollY < s.offsetTop + s.offsetHeight) {
+                current = s.id;
+            }
         });
-    </script>
+        navItems.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+    }
 
+    window.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('resize', updateActive);
+    updateActive();
+
+    // ── SMOOTH SCROLL ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const targetId = a.getAttribute('href');
+            if (targetId === '#') return;
+            const target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                const headerHeight = header ? header.offsetHeight : 0;
+                window.scrollTo({
+                    top: target.getBoundingClientRect().top + window.pageYOffset - headerHeight,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+</script>
 </body>
 
 </html>
