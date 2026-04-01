@@ -1170,6 +1170,23 @@
             font-size: 0.72rem;
             color: rgba(255, 255, 255, 0.35);
         }
+
+        /* FIX: Mantiene el botón de llamar verde y brillante siempre */
+        .nav-links li a.btn-call {
+            background: linear-gradient(135deg, var(--success), var(--success-dark)) !important;
+            color: #fff !important;
+            opacity: 1 !important;
+            margin-top: 15px;
+        }
+
+        /* Evita que se ponga azul al pasar el mouse o estar "activo" */
+        .nav-links li a.btn-call:hover,
+        .nav-links li a.btn-call.active {
+            background: linear-gradient(135deg, var(--success-dark), var(--success)) !important;
+            color: #fff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.35) !important;
+        }
     </style>
 </head>
 
@@ -1512,100 +1529,100 @@
         </div>
     </footer>
 
- <script>
-    // ── OBSERVER PARA ANIMACIONES FADE-IN ──
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) { 
-                e.target.classList.add('visible'); 
-                observer.unobserve(e.target); 
-            }
+    <script>
+        // ── OBSERVER PARA ANIMACIONES FADE-IN ──
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // ── MENÚ MÓVIL CON BLOQUEO POR EVENTOS (CERO SALTOS) ──
+        const openBtn = document.getElementById('menu-open-btn');
+        const closeBtn = document.getElementById('nav-close-btn');
+        const navLinks = document.getElementById('nav-links');
+        const overlay = document.getElementById('nav-overlay');
+        const body = document.body;
+
+        // Función para prevenir el scroll (la "llave" del bloqueo)
+        function preventDefault(e) { e.preventDefault(); }
+
+        function openMenu() {
+            navLinks.classList.add('active');
+            overlay.classList.add('active');
+            body.classList.add('menu-open');
+
+            // Bloqueo táctil para móviles (esto evita que el dedo mueva el fondo)
+            window.addEventListener('wheel', preventDefault, { passive: false });
+            window.addEventListener('touchmove', preventDefault, { passive: false });
+            window.addEventListener('keydown', (e) => {
+                if (['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(e.code)) preventDefault(e);
+            }, { passive: false });
+        }
+
+        function closeMenu() {
+            navLinks.classList.remove('active');
+            overlay.classList.remove('active');
+            body.classList.remove('menu-open');
+
+            // Liberamos el scroll
+            window.removeEventListener('wheel', preventDefault);
+            window.removeEventListener('touchmove', preventDefault);
+        }
+
+        openBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+        // ── HEADER SCROLL ──
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        }, { passive: true });
+
+        // ── ACTIVE NAV LINK ──
+        const sections = document.querySelectorAll('section[id]');
+        const navItems = document.querySelectorAll('.nav-links a[href^="#"]');
+
+        function updateActive() {
+            let current = '';
+            const scrollY = window.scrollY + (header ? header.offsetHeight + 20 : 120);
+            sections.forEach(s => {
+                if (scrollY >= s.offsetTop && scrollY < s.offsetTop + s.offsetHeight) {
+                    current = s.id;
+                }
+            });
+            navItems.forEach(a => {
+                a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+            });
+        }
+
+        window.addEventListener('scroll', updateActive, { passive: true });
+        window.addEventListener('resize', updateActive);
+        updateActive();
+
+        // ── SMOOTH SCROLL ──
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const targetId = a.getAttribute('href');
+                if (targetId === '#') return;
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    const headerHeight = header ? header.offsetHeight : 0;
+                    window.scrollTo({
+                        top: target.getBoundingClientRect().top + window.pageYOffset - headerHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            });
         });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-    // ── MENÚ MÓVIL CON BLOQUEO POR EVENTOS (CERO SALTOS) ──
-    const openBtn = document.getElementById('menu-open-btn');
-    const closeBtn = document.getElementById('nav-close-btn');
-    const navLinks = document.getElementById('nav-links');
-    const overlay = document.getElementById('nav-overlay');
-    const body = document.body;
-
-    // Función para prevenir el scroll (la "llave" del bloqueo)
-    function preventDefault(e) { e.preventDefault(); }
-
-    function openMenu() {
-        navLinks.classList.add('active');
-        overlay.classList.add('active');
-        body.classList.add('menu-open');
-        
-        // Bloqueo táctil para móviles (esto evita que el dedo mueva el fondo)
-        window.addEventListener('wheel', preventDefault, { passive: false });
-        window.addEventListener('touchmove', preventDefault, { passive: false });
-        window.addEventListener('keydown', (e) => {
-            if(['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(e.code)) preventDefault(e);
-        }, { passive: false });
-    }
-
-    function closeMenu() {
-        navLinks.classList.remove('active');
-        overlay.classList.remove('active');
-        body.classList.remove('menu-open');
-        
-        // Liberamos el scroll
-        window.removeEventListener('wheel', preventDefault);
-        window.removeEventListener('touchmove', preventDefault);
-    }
-
-    openBtn.addEventListener('click', openMenu);
-    closeBtn.addEventListener('click', closeMenu);
-    overlay.addEventListener('click', closeMenu);
-    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-
-    // ── HEADER SCROLL ──
-    const header = document.getElementById('header');
-    window.addEventListener('scroll', () => {
-        header.classList.toggle('scrolled', window.scrollY > 50);
-    }, { passive: true });
-
-    // ── ACTIVE NAV LINK ──
-    const sections = document.querySelectorAll('section[id]');
-    const navItems = document.querySelectorAll('.nav-links a[href^="#"]');
-
-    function updateActive() {
-        let current = '';
-        const scrollY = window.scrollY + (header ? header.offsetHeight + 20 : 120);
-        sections.forEach(s => {
-            if (scrollY >= s.offsetTop && scrollY < s.offsetTop + s.offsetHeight) {
-                current = s.id;
-            }
-        });
-        navItems.forEach(a => {
-            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-        });
-    }
-
-    window.addEventListener('scroll', updateActive, { passive: true });
-    window.addEventListener('resize', updateActive);
-    updateActive();
-
-    // ── SMOOTH SCROLL ──
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-            const targetId = a.getAttribute('href');
-            if (targetId === '#') return;
-            const target = document.querySelector(targetId);
-            if (target) {
-                e.preventDefault();
-                const headerHeight = header ? header.offsetHeight : 0;
-                window.scrollTo({
-                    top: target.getBoundingClientRect().top + window.pageYOffset - headerHeight,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-</script>
+    </script>
 </body>
 
 </html>
