@@ -39,7 +39,13 @@
     --radius-lg: 24px;
     --transition: all 0.22s cubic-bezier(0.25, 0.8, 0.25, 1);
     --transition-slow: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    --header-height: 0; /* Se establecerá con JavaScript */
+    --header-height: 0;
+}
+
+/* Clase para bloquear el scroll del body cuando el menú está abierto */
+body.menu-open {
+    overflow: hidden;
+    /* No modificamos position ni top, solo evitamos el scroll */
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -665,32 +671,25 @@ footer { background: var(--dark); color: rgba(255,255,255,0.8); padding: 56px 0 
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // ── MENÚ MÓVIL CON BLOQUEO DE SCROLL MEJORADO ──
+    // ── MENÚ MÓVIL CON BLOQUEO DE SCROLL MEJORADO (SIN SALTO VISUAL) ──
     const openBtn  = document.getElementById('menu-open-btn');
     const closeBtn = document.getElementById('nav-close-btn');
     const navLinks = document.getElementById('nav-links');
     const overlay  = document.getElementById('nav-overlay');
-    
-    let scrollPosition = 0;
+    const body = document.body;
 
     function openMenu() {
-        scrollPosition = window.scrollY;
         navLinks.classList.add('active');
         overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollPosition}px`;
-        document.body.style.width = '100%';
+        // Solo agregamos la clase que bloquea el scroll, sin modificar position
+        body.classList.add('menu-open');
     }
 
     function closeMenu() {
         navLinks.classList.remove('active');
         overlay.classList.remove('active');
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollPosition);
+        // Removemos la clase para restaurar el scroll
+        body.classList.remove('menu-open');
     }
 
     openBtn.addEventListener('click', openMenu);
@@ -707,7 +706,6 @@ footer { background: var(--dark); color: rgba(255,255,255,0.8); padding: 56px 0 
         if (header && headerSpacer) {
             const headerHeight = header.offsetHeight;
             headerSpacer.style.height = headerHeight + 'px';
-            // Guardar la altura en una variable CSS para posibles usos futuros
             document.documentElement.style.setProperty('--header-height', headerHeight + 'px');
         }
     }
@@ -727,7 +725,6 @@ footer { background: var(--dark); color: rgba(255,255,255,0.8); padding: 56px 0 
 
     function updateActive() {
         let current = '';
-        // Ajuste para el header fijo (más espacio desde la parte superior)
         const scrollY = window.scrollY + (header ? header.offsetHeight + 20 : 120);
         sections.forEach(s => {
             if (scrollY >= s.offsetTop && scrollY < s.offsetTop + s.offsetHeight) {
