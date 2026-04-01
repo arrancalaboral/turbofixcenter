@@ -112,7 +112,7 @@ header {
     width: 100%;
     z-index: 4000; 
     border-bottom: 1px solid rgba(0, 200, 232, 0.18); 
-    transition: var(--transition); 
+    transition: none;
     transform: translateY(0);
 }
 
@@ -120,6 +120,19 @@ header {
 .header-spacer {
     width: 100%;
     display: block;
+    height: 70px; /* Altura promedio en móvil */
+}
+
+@media (min-width: 900px) {
+    .header-spacer {
+        height: 82px; /* Altura en tablets */
+    }
+}
+
+@media (min-width: 1200px) {
+    .header-spacer {
+        height: 92px; /* Altura en PC */
+    }
 }
 
 header.scrolled { 
@@ -716,21 +729,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.8); padding: 56px 0 
 
     // ── HEADER SCROLL Y ESPACIADOR DINÁMICO ──
     const header = document.getElementById('header');
-    const headerSpacer = document.getElementById('header-spacer');
-    
-    // Función para actualizar la altura del espaciador
-    function updateHeaderSpacer() {
-        if (header && headerSpacer) {
-            const headerHeight = header.offsetHeight;
-            headerSpacer.style.height = headerHeight + 'px';
-            document.documentElement.style.setProperty('--header-height', headerHeight + 'px');
-        }
-    }
-    
-    // Actualizar al cargar y al redimensionar
-    window.addEventListener('load', updateHeaderSpacer);
-    window.addEventListener('resize', updateHeaderSpacer);
-    
+
     // Efecto de scroll en el header
     window.addEventListener('scroll', () => {
         header.classList.toggle('scrolled', window.scrollY > 50);
@@ -760,7 +759,6 @@ footer { background: var(--dark); color: rgba(255,255,255,0.8); padding: 56px 0 
 
     window.addEventListener('scroll', updateActive, { passive: true });
     window.addEventListener('resize', () => {
-        updateHeaderSpacer();
         updateActive();
     });
     updateActive();
